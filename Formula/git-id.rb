@@ -1,28 +1,66 @@
 class GitId < Formula
-  desc "Manage Git identities and route them to directories via conditional includes"
+  desc "Manage Git identities and route them to directories via native conditional includes"
   homepage "https://github.com/jmarette/git-id"
-  url "https://github.com/jmarette/git-id/archive/refs/tags/v0.1.0.tar.gz"
-  sha256 "a686cd2a3c9de405f814a71a932c575f8ef9c39a1a4d5510c9a234009395351d"
+  version "0.1.0"
+  if OS.mac?
+    if Hardware::CPU.arm?
+      url "https://github.com/jmarette/git-id/releases/download/v0.1.0/git-id-aarch64-apple-darwin.tar.xz"
+      sha256 "af684ccfc0d59dbf1e86ae38e0ddb0b697b13ef25cc300199e1e96a3b4bfee1b"
+    end
+    if Hardware::CPU.intel?
+      url "https://github.com/jmarette/git-id/releases/download/v0.1.0/git-id-x86_64-apple-darwin.tar.xz"
+      sha256 "82ea6686a527416b740819e9e26d60020a0fffdb5d2c91510556a98e8a5f888a"
+    end
+  end
+  if OS.linux?
+    if Hardware::CPU.arm?
+      url "https://github.com/jmarette/git-id/releases/download/v0.1.0/git-id-aarch64-unknown-linux-gnu.tar.xz"
+      sha256 "bebae45ed6283bebbb4835666091bbbf4b52adb83155a3bc43f38095e4ae0c6e"
+    end
+    if Hardware::CPU.intel?
+      url "https://github.com/jmarette/git-id/releases/download/v0.1.0/git-id-x86_64-unknown-linux-gnu.tar.xz"
+      sha256 "cbf808bdef6c42fc3da463f5baccb042dbc3f49ff30b1387b44d6fcb341428e4"
+    end
+  end
   license any_of: ["MIT", "Apache-2.0"]
-  head "https://github.com/jmarette/git-id.git", branch: "master"
 
-  depends_on "rust" => :build
+  BINARY_ALIASES = {
+    "aarch64-apple-darwin":      {},
+    "aarch64-unknown-linux-gnu": {},
+    "x86_64-apple-darwin":       {},
+    "x86_64-pc-windows-gnu":     {},
+    "x86_64-unknown-linux-gnu":  {},
+  }.freeze
 
-  def install
-    system "cargo", "install", *std_cargo_args
-    generate_completions_from_executable(bin/"git-id", "completions")
+  def target_triple
+    cpu = Hardware::CPU.arm? ? "aarch64" : "x86_64"
+    os = OS.mac? ? "apple-darwin" : "unknown-linux-gnu"
+
+    "#{cpu}-#{os}"
   end
 
-  test do
-    assert_match version.to_s, shell_output("#{bin}/git-id --version")
+  def install_binary_aliases!
+    BINARY_ALIASES[target_triple.to_sym].each do |source, dests|
+      dests.each do |dest|
+        bin.install_symlink bin/source.to_s => dest
+      end
+    end
+  end
 
-    # Full workflow inside the sandboxed test HOME.
-    ENV["HOME"] = testpath.to_s
-    ENV["XDG_CONFIG_HOME"] = (testpath/".config").to_s
-    system bin/"git-id", "init", "--no-use-config-only"
-    system bin/"git-id", "create", "demo", "--name", "Demo User", "--email", "demo@tap.example"
-    system bin/"git-id", "use", "demo", (testpath/"dev").to_s
-    system bin/"git-id", "which", (testpath/"dev").to_s
-    assert_match "demo@tap.example", shell_output("#{bin}/git-id show demo")
+  def install
+    bin.install "git-id" if OS.mac? && Hardware::CPU.arm?
+    bin.install "git-id" if OS.mac? && Hardware::CPU.intel?
+    bin.install "git-id" if OS.linux? && Hardware::CPU.arm?
+    bin.install "git-id" if OS.linux? && Hardware::CPU.intel?
+
+    install_binary_aliases!
+
+    # Homebrew will automatically install these, so we don't need to do that
+    doc_files = Dir["README.*", "readme.*", "LICENSE", "LICENSE.*", "CHANGELOG.*"]
+    leftover_contents = Dir["*"] - doc_files
+
+    # Install any leftover files in pkgshare; these are probably config or
+    # sample files.
+    pkgshare.install(*leftover_contents) unless leftover_contents.empty?
   end
 end
