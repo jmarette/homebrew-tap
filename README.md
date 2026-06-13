@@ -33,25 +33,23 @@ $ brew install git-id
 
 ## Cutting a new git-id release
 
-1. In the `git-id` repository: bump the version in `Cargo.toml`, update
-   `CHANGELOG.md` (set the release date on the `Unreleased` section), commit,
-   then tag and push:
+Releases are automated with
+[cargo-dist](https://axodotdev.github.io/cargo-dist/). In the `git-id`
+repository:
+
+1. Bump the version in `Cargo.toml`, set the release date on the `Unreleased`
+   section of `CHANGELOG.md`, commit and push.
+2. Tag and push the tag:
 
    ```console
-   $ git tag v0.2.0 && git push origin master --tags
+   $ git tag v0.2.0 && git push origin v0.2.0
    ```
 
-2. In this repository, update the formula (downloads the tag tarball from
-   GitHub and rewrites `url` + `sha256`):
+GitHub Actions then builds the binaries (macOS/Linux, arm64 + x86_64),
+creates the GitHub Release, and pushes the regenerated `Formula/git-id.rb`
+to this tap automatically (requires the `HOMEBREW_TAP_TOKEN` secret on the
+`git-id` repository). Users get the update with `brew upgrade git-id`.
 
-   ```console
-   $ scripts/bump.sh 0.2.0
-   ```
-
-3. Review, commit and push:
-
-   ```console
-   $ git commit -am "git-id 0.2.0" && git push
-   ```
-
-Users get the update with `brew upgrade git-id`.
+> The formula is generated — do not edit it by hand, changes are overwritten
+> at every release. `scripts/bump.sh` only remains as a manual fallback for
+> the legacy source-based formula.
