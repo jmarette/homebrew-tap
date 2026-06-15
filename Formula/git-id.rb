@@ -1,25 +1,25 @@
 class GitId < Formula
   desc "Manage Git identities and route them to directories via native conditional includes"
   homepage "https://github.com/jmarette/git-id"
-  version "0.4.1"
+  version "0.5.0"
   if OS.mac?
     if Hardware::CPU.arm?
-      url "https://github.com/jmarette/git-id/releases/download/v0.4.1/git-id-aarch64-apple-darwin.tar.xz"
-      sha256 "af931e54630f19fa41395365b96f695ae7220ec70820930c73cf9cd2ff3674fa"
+      url "https://github.com/jmarette/git-id/releases/download/v0.5.0/git-id-aarch64-apple-darwin.tar.xz"
+      sha256 "cd42ee1b526f14ca6f07ead98a69ee404a127543cf6770aee6a6cfa6fae4b8d0"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/jmarette/git-id/releases/download/v0.4.1/git-id-x86_64-apple-darwin.tar.xz"
-      sha256 "102ce51863be1287748ef5290dbeb1397be3874638b767e6367c842f9ad8efce"
+      url "https://github.com/jmarette/git-id/releases/download/v0.5.0/git-id-x86_64-apple-darwin.tar.xz"
+      sha256 "aa85b98647d2118c4b3af694073b063d01475095f813e8a515b89585f333062d"
     end
   end
   if OS.linux?
     if Hardware::CPU.arm?
-      url "https://github.com/jmarette/git-id/releases/download/v0.4.1/git-id-aarch64-unknown-linux-gnu.tar.xz"
-      sha256 "dad6b52cec5a47295cec2d1e75b8ed4f3e7edea4507525a9a425352e885b96fd"
+      url "https://github.com/jmarette/git-id/releases/download/v0.5.0/git-id-aarch64-unknown-linux-gnu.tar.xz"
+      sha256 "93aaf7b45302b36a0f8aa2ca253d71638c630a1b9a3de6a440915f4814ee9cf2"
     end
     if Hardware::CPU.intel?
-      url "https://github.com/jmarette/git-id/releases/download/v0.4.1/git-id-x86_64-unknown-linux-gnu.tar.xz"
-      sha256 "0fa2b7bbe94ddabdcf7768607d0478a714f5bd16305def52e747b6f3851544fd"
+      url "https://github.com/jmarette/git-id/releases/download/v0.5.0/git-id-x86_64-unknown-linux-gnu.tar.xz"
+      sha256 "7d6e0579c324c3e64528f5571233fe33462d5eab78c036e938bae96bc72ac34d"
     end
   end
   license any_of: ["MIT", "Apache-2.0"]
