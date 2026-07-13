@@ -7,7 +7,7 @@ cask "openwith-app" do
   desc "GUI for managing macOS default applications"
   homepage "https://github.com/jmarette/openwith"
 
-  depends_on macos: ">= :sequoia"
+  depends_on macos: :sequoia
 
   app "OpenWith.app"
 
